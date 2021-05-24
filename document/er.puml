@@ -1,0 +1,15 @@
+@startuml
+
+hide circle
+skinparam inetype ortho
+
+entity Lending {
+    +borrower_id: string
+    +lender_name: string
+    +created_at: timestamp
+    --
+    #content: string
+    #has_returned: boolean
+}
+
+@enduml
