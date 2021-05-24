@@ -12,4 +12,11 @@ entity Lending {
     #has_returned: boolean
 }
 
+entity Example {
+    +primary_key: type
+    ~foreign_key: type
+    #not null: type
+}
+note bottom: 上からそれぞれ<<PK>>, <<FK>>, <<NOT NULL>>を表す記号
+
 @enduml
