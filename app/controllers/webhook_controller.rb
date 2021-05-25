@@ -21,25 +21,42 @@ class WebhookController < ApplicationController
     events = client.parse_events_from(body)
     events.each do |event|
       reply_token = event['replyToken']
+      user_id = event['source']['userId']
 
       case event
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          messages = event.message['text'].split(/[\s　]+/)
+          begin
+            messages = event.message['text'].split(/[\s　]+/)
 
-          response =
-            if messages[0] == "借りた" && messages.length == 3
-              "#{messages[2]}さんに#{messages[1]}を借りました！"
-            elsif messages[0] == "一覧" && messages.length == 1
-              '佐藤くん(2個)　100円　マスタリングTCP/IP借りた、田中くん(1個)　研究の調査を手伝ってもらった、......'
-            elsif messages[0] == "返した" && messages.length == 3
-              "#{messages[2]}さんに#{messages[1]}を返しました！"
-            else
-              '不正な形式のメッセージです'
-            end
+            response =
+              if messages[0] == "借りた" && messages.length == 3
+                lender_name = messages[1]
+                content = messages[2]
 
-          client.reply_message(reply_token, { type: 'text', text: response })
+                Lending.create!(borrower_id: user_id, lender_name: lender_name, content: content)
+
+                count_lendings = Lending.where("borrower_id = ?", user_id).where("lender_name = ?", lender_name).count
+                "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{count_lendings}個の借りがあります。"
+
+              elsif messages[0] == "一覧" && messages.length == 1
+                '佐藤くん(2個)　100円　マスタリングTCP/IP借りた、田中くん(1個)　研究の調査を手伝ってもらった、......'
+
+              elsif messages[0] == "返した" && messages.length == 3
+                "#{messages[2]}さんに#{messages[1]}を返しました！"
+
+              else
+                raise RuntimeError
+              end
+
+            client.reply_message(reply_token, { type: 'text', text: response })
+          rescue
+            client.reply_message(
+              reply_token,
+              { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" }
+            )
+          end
         else
           client.reply_message(reply_token, { type: 'text', text: 'そのメッセージ形式はサポートされていません' })
         end
