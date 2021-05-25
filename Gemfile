@@ -44,3 +44,10 @@ gem 'sinatra'
 gem 'bootsnap', require: false
 
 gem 'listen', group: :development
+
+# debug tool
+gem 'pry-byebug', group: :development
+gem 'pry-rails', group: :development
+
+# environment variable
+gem 'dotenv-rails', groups: [:development, :test]
