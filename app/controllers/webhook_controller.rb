@@ -28,23 +28,20 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           begin
-            messages = event.message['text'].split(/[\s　]+/)
+            action, lender_name, content = event.message['text'].split(/[\s　]+/)
 
             response =
-              if messages[0] == "借りた" && messages.length == 3
-                lender_name = messages[1]
-                content = messages[2]
-
+              if action == "借りた"
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
                 lending_count = Lending.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
-              elsif messages[0] == "一覧" && messages.length == 1
+              elsif action == "一覧"
                 '佐藤くん(2個)　100円　マスタリングTCP/IP借りた、田中くん(1個)　研究の調査を手伝ってもらった、......'
 
-              elsif messages[0] == "返した" && messages.length == 3
-                "#{messages[2]}さんに#{messages[1]}を返しました！"
+              elsif action == "返した"
+                "#{lender_name}さんに#{content}を返しました！"
 
               else
                 raise RuntimeError
