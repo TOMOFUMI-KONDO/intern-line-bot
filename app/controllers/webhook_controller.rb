@@ -42,7 +42,23 @@ class WebhookController < ApplicationController
                 render_to_string partial: 'list_per_lender', locals: { lending_per_lender: lending_per_lender }
 
               elsif action == "返した"
-                "#{lender_name}さんに#{content}を返しました！"
+                lending = Lending
+                            .not_returned
+                            .where(borrower_id: borrower_id, lender_name: lender_name, content: content)
+                            .order(:created_at)
+                            .first
+
+                raise(
+                  ArgumentError,
+                  "Lending was not found.\n
+                   borrower_id: #{borrower_id}, lender_name: #{lender_name}, content: #{content}"
+                ) if lending.nil?
+
+                lending.has_returned = true
+                lending.save!
+
+                lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
+                "#{lender_name}さんに#{content}を返しました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               else
                 raise ArgumentError, "Unexpected action: #{action}"
