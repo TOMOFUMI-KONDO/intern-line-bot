@@ -51,7 +51,8 @@ class WebhookController < ApplicationController
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
-          rescue
+          rescue => e
+            puts e
             client.reply_message(
               reply_token,
               { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" }
