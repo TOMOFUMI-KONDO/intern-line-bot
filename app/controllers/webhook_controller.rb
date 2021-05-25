@@ -26,15 +26,15 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          message = event.message['text'].split(/[\s　]+/)
+          messages = event.message['text'].split(/[\s　]+/)
 
           response =
-            if message[0] == "借りた" && message.length == 3
-              "#{message[2]}さんに#{message[1]}を借りました！"
-            elsif message[0] == "一覧" && message.length == 1
+            if messages[0] == "借りた" && messages.length == 3
+              "#{messages[2]}さんに#{messages[1]}を借りました！"
+            elsif messages[0] == "一覧" && messages.length == 1
               '佐藤くん(2個)　100円　マスタリングTCP/IP借りた、田中くん(1個)　研究の調査を手伝ってもらった、......'
-            elsif message[0] == "返した" && message.length == 3
-              "#{message[2]}さんに#{message[1]}を返しました！"
+            elsif messages[0] == "返した" && messages.length == 3
+              "#{messages[2]}さんに#{messages[1]}を返しました！"
             else
               '不正な形式のメッセージです'
             end
