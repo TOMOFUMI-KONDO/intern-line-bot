@@ -1,0 +1,8 @@
+<%=
+  lending_per_lender.map do |lender, content_counts|
+    count_total = content_counts.inject(0) { |result, content_count| result + content_count[1] }
+    count_per_content = content_counts.map { |content, count| "- #{content}　#{count}個" }
+
+    ["#{lender}　#{count_total}個", *count_per_content].join("\n")
+  end.join("\n\n")
+%>
