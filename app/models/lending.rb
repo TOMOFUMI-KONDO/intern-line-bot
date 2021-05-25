@@ -1,6 +1,8 @@
 class Lending < ApplicationRecord
   validates :borrower_id, :lender_name, :content, presence: true
 
+  scope :not_returned, -> { where(has_returned: false) }
+
   scope :per_lender, -> {
     group(:lender_name, :content).select("lender_name, content, count(*)").each_with_object({}) do |lending, hash|
       lender = lending.lender_name.intern
