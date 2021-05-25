@@ -21,7 +21,7 @@ class WebhookController < ApplicationController
     events = client.parse_events_from(body)
     events.each do |event|
       reply_token = event['replyToken']
-      user_id = event['source']['userId']
+      borrower_id = event['source']['userId']
 
       case event
       when Line::Bot::Event::Message
@@ -35,9 +35,9 @@ class WebhookController < ApplicationController
                 lender_name = messages[1]
                 content = messages[2]
 
-                Lending.create!(borrower_id: user_id, lender_name: lender_name, content: content)
+                Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
-                count_lendings = Lending.where("borrower_id = ?", user_id).where("lender_name = ?", lender_name).count
+                count_lendings = Lending.where("borrower_id = ?", borrower_id).where("lender_name = ?", lender_name).count
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{count_lendings}個の借りがあります。"
 
               elsif messages[0] == "一覧" && messages.length == 1
