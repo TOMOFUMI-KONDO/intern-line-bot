@@ -37,7 +37,7 @@ class WebhookController < ApplicationController
 
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
-                count_lendings = Lending.where("borrower_id = ?", borrower_id).where("lender_name = ?", lender_name).count
+                count_lendings = Lending.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{count_lendings}個の借りがあります。"
 
               elsif messages[0] == "一覧" && messages.length == 1
