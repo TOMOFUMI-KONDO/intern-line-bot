@@ -27,9 +27,9 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          begin
-            action, lender_name, content = event.message['text'].split(/[\s　]+/)
+          action, lender_name, content = event.message['text'].split(/[\s　]+/)
 
+          begin
             response =
               if action == "借りた"
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
@@ -44,16 +44,17 @@ class WebhookController < ApplicationController
                 "#{lender_name}さんに#{content}を返しました！"
 
               else
-                raise RuntimeError
+                raise ArgumentError, "Unexpected action: #{action}"
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
-          rescue => e
-            puts e
-            client.reply_message(
-              reply_token,
-              { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" }
-            )
+          rescue => error
+            logger.error error
+
+            response = error.is_a?(ArgumentError) ?
+                         "エラーが発生しました。入力値が間違っている可能性があります。" :
+                         " 予期せぬエラーが発生しました。"
+            client.reply_message(reply_token, { type: 'text', text: response })
           end
         else
           client.reply_message(reply_token, { type: 'text', text: 'そのメッセージ形式はサポートされていません' })
