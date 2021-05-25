@@ -1,0 +1,22 @@
+@startuml
+
+hide circle
+skinparam inetype ortho
+
+entity Lending {
+    +borrower_id: string
+    +lender_name: string
+    +created_at: timestamp
+    --
+    #content: string
+    #has_returned: boolean
+}
+
+entity Example {
+    +primary_key: type
+    ~foreign_key: type
+    #not null: type
+}
+note bottom: 上からそれぞれ<<PK>>, <<FK>>, <<NOT NULL>>を表す記号
+
+@enduml
