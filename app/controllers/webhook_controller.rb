@@ -39,7 +39,7 @@ class WebhookController < ApplicationController
 
               elsif action == "一覧"
                 lending_per_lender = Lending.where(borrower_id: borrower_id).per_lender
-                render_to_string partial: 'lendings/list_per_lender', locals: { lending_per_lender: lending_per_lender }
+                render_to_string partial: 'list_per_lender', locals: { lending_per_lender: lending_per_lender }
 
               elsif action == "返した"
                 "#{lender_name}さんに#{content}を返しました！"
