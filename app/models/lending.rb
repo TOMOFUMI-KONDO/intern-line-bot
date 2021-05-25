@@ -1,5 +1,3 @@
 class Lending < ApplicationRecord
-  validates :borrower_id, presence: true
-  validates :lender_name, presence: true
-  validates :content, presence: true
+  validates :borrower_id, :lender_name, :content, presence: true
 end
