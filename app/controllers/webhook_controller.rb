@@ -2,7 +2,7 @@ class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
 
   def client
-    @client ||= WebhookHelper::LineBotClient.new
+    @client ||= LineBotClient.generate
   end
 
   def callback
@@ -26,7 +26,7 @@ class WebhookController < ApplicationController
 
           begin
             response =
-              if action == "借りた"
+              if action == "借りた" && lender_name && content
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
@@ -35,11 +35,11 @@ class WebhookController < ApplicationController
               elsif action == "一覧"
                 '佐藤くん(2個)　100円　マスタリングTCP/IP借りた、田中くん(1個)　研究の調査を手伝ってもらった、......'
 
-              elsif action == "返した"
+              elsif action == "返した" && lender_name && content
                 "#{lender_name}さんに#{content}を返しました！"
 
               else
-                raise ArgumentError, "Unexpected action: #{action}"
+                raise ArgumentError, "Invalid parameters: action:#{action}"
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
