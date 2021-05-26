@@ -4,12 +4,14 @@ hide circle
 skinparam inetype ortho
 
 entity Lending {
-    +borrower_id: string
-    +lender_name: string
-    +created_at: timestamp
+    +id: int
     --
+    #borrower_id: string
+    #lender_name: string
     #content: string
     #has_returned: boolean
+    #created_at: timestamp
+    #udpated_at: timestamp
 }
 
 entity Example {
