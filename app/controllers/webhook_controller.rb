@@ -43,16 +43,11 @@ class WebhookController < ApplicationController
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
+          rescue ArgumentError => error
+            client.reply_message(reply_token, { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" })
           rescue => error
-            response =
-              if error.is_a?(ArgumentError)
-                "エラーが発生しました。入力値が間違っている可能性があります。"
-              else
-                logger.error error
-                " 予期せぬエラーが発生しました。"
-              end
-
-            client.reply_message(reply_token, { type: 'text', text: response })
+            logger.error error
+            client.reply_message(reply_token, { type: 'text', text: " 予期せぬエラーが発生しました。" })
           end
         else
           client.reply_message(reply_token, { type: 'text', text: 'そのメッセージ形式はサポートされていません' })
