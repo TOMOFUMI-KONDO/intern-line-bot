@@ -44,11 +44,7 @@ class WebhookController < ApplicationController
                             .order(:created_at)
                             .first
 
-                raise(
-                  ArgumentError,
-                  "Lending was not found.\n
-                   borrower_id: #{borrower_id}, lender_name: #{lender_name}, content: #{content}"
-                ) if lending.nil?
+                raise ArgumentError if lending.nil?
 
                 lending.has_returned = true
                 lending.save!
@@ -57,7 +53,7 @@ class WebhookController < ApplicationController
                 "#{lender_name}さんに#{content}を返しました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               else
-                raise ArgumentError, "Invalid parameters: action:#{action}"
+                raise ArgumentError
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
