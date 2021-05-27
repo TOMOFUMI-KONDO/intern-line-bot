@@ -46,8 +46,7 @@ class WebhookController < ApplicationController
 
                 raise ArgumentError if lending.nil?
 
-                lending.has_returned = true
-                lending.save!
+                lending.return_content!
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を返しました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
