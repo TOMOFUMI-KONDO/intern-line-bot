@@ -33,8 +33,9 @@ class WebhookController < ApplicationController
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               elsif action == "一覧"
-                lending_per_lender = Lending.not_returned.where(borrower_id: borrower_id).per_lender
-                render_to_string partial: 'list_per_lender', locals: { lending_per_lender: lending_per_lender }
+                per_lender_content_counts = Lending.not_returned.where(borrower_id: borrower_id).count_per_lender_content
+                lendings_per_lender_content = Lending.format_per_lender_content_count(per_lender_content_counts)
+                render_to_string partial: 'list_per_lender', locals: { lendings_per_lender_content: lendings_per_lender_content }
 
               elsif action == "返した" && lender_name && content
                 "#{lender_name}さんに#{content}を返しました！"
