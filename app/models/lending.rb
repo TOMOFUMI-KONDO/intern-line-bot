@@ -9,8 +9,8 @@ class Lending < ApplicationRecord
 
   def self.format_per_lender_content_count(per_lender_content_counts)
     per_lender_content_counts.each_with_object({}) do |lending, hash|
-      lender = lending.lender_name.intern
-      content = lending.content.intern
+      lender = lending.lender_name
+      content = lending.content
       count = lending.count
 
       if hash.key?(lender)
