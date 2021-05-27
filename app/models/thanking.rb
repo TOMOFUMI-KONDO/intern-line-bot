@@ -1,5 +1,6 @@
 class Thanking < ApplicationRecord
-  belongs_to :lending
+  validates :name, :url, presence: true
 
-  validates :name, :url, :lending_id, presence: true
+  has_many :lending_thankings
+  has_many :lendings, through: :lending_thankings
 end

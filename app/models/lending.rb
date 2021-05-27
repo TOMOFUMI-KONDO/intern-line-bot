@@ -16,4 +16,7 @@ class Lending < ApplicationRecord
       end
     end
   }
+
+  has_many :lending_thankings
+  has_many :thankings, through: :lending_thankings
 end
