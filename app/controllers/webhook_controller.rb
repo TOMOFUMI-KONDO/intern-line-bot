@@ -38,14 +38,19 @@ class WebhookController < ApplicationController
                 render_to_string partial: 'list_per_lender', locals: { lendings_per_lender_content: lendings_per_lender_content }
 
               elsif action == "返した" && lender_name && content
-                "#{lender_name}さんに#{content}を返しました！"
+                lending = Lending.not_returned.find_by!(borrower_id: borrower_id, lender_name: lender_name, content: content)
+
+                lending.return_content!
+
+                lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
+                "#{lender_name}さんに#{content}を返しました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               else
-                raise ArgumentError, "Invalid parameters: action:#{action}"
+                raise ArgumentError
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
-          rescue ArgumentError => error
+          rescue ArgumentError, ActiveRecord::RecordNotFound => error
             client.reply_message(reply_token, { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" })
           rescue => error
             logger.error error

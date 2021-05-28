@@ -7,6 +7,10 @@ class Lending < ApplicationRecord
     group(:lender_name, :content).select("lender_name, content, count(*)")
   }
 
+  def return_content!
+    update!(has_returned: true)
+  end
+
   def self.format_per_lender_content_count(per_lender_content_counts)
     per_lender_content_counts.each_with_object({}) do |lending, hash|
       lender = lending.lender_name
