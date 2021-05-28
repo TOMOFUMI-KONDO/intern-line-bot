@@ -32,20 +32,19 @@ class WebhookController < ApplicationController
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
-              elsif action == "一覧"
-                if lender_name
-                  render_to_string partial: 'list_per_content', locals: {
-                    lender_name: lender_name,
-                    per_content_counts: Lending.not_returned
-                                               .where(borrower_id: borrower_id, lender_name: lender_name)
-                                               .count_per_content
-                  }
+              elsif action == "一覧" && lender_name
+                per_content_counts = Lending.not_returned
+                                            .where(borrower_id: borrower_id, lender_name: lender_name)
+                                            .count_per_content
+                render_to_string partial: 'list_per_content', locals: {
+                  lender_name: lender_name,
+                  per_content_counts: per_content_counts
+                }
 
-                else
-                  per_lender_content_counts = Lending.not_returned.where(borrower_id: borrower_id).count_per_lender_content
-                  lendings_per_lender_content = Lending.format_per_lender_content_count(per_lender_content_counts)
-                  render_to_string partial: 'list_per_lender', locals: { lendings_per_lender_content: lendings_per_lender_content }
-                end
+              elsif action == "一覧"
+                per_lender_content_counts = Lending.not_returned.where(borrower_id: borrower_id).count_per_lender_content
+                lendings_per_lender_content = Lending.format_per_lender_content_count(per_lender_content_counts)
+                render_to_string partial: 'list_per_lender', locals: { lendings_per_lender_content: lendings_per_lender_content }
 
               elsif action == "返した" && lender_name && content
                 lending = Lending.not_returned.find_by!(borrower_id: borrower_id, lender_name: lender_name, content: content)
