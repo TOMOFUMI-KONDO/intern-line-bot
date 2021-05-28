@@ -10,6 +10,10 @@ class Lending < ApplicationRecord
     group(:lender_name, :content).select("lender_name, content, count(*)")
   }
 
+  scope :count_per_content, -> {
+    group(:content).select('content, count(*)')
+  }
+
   def return_content!
     update!(has_returned: true)
   end
