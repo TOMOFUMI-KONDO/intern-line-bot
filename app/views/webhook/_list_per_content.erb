@@ -1,3 +1,3 @@
 <% total_count = per_content_counts.inject(0) { |result, content_count| result + content_count.count } %>
-<%= lender_name %>さんには<%= total_count %>個の借りがあります。
+<%= lender_name %>には<%= total_count %>個の借りがあります。
 <%= per_content_counts.map { |content_count| "- #{content_count.content}　#{content_count.count}個" }.join("\n") %>
