@@ -1,13 +1,8 @@
-require 'line/bot'
-
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
 
   def client
-    @client ||= Line::Bot::Client.new do |config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-    end
+    @client ||= LineBotClient.generate
   end
 
   def callback
@@ -31,47 +26,35 @@ class WebhookController < ApplicationController
 
           begin
             response =
-              if action == "借りた"
+              if action == "借りた" && lender_name && content
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               elsif action == "一覧"
-                lending_per_lender = Lending.not_returned.where(borrower_id: borrower_id).per_lender
-                render_to_string partial: 'list_per_lender', locals: { lending_per_lender: lending_per_lender }
+                per_lender_content_counts = Lending.not_returned.where(borrower_id: borrower_id).count_per_lender_content
+                lendings_per_lender_content = Lending.format_per_lender_content_count(per_lender_content_counts)
+                render_to_string partial: 'list_per_lender', locals: { lendings_per_lender_content: lendings_per_lender_content }
 
-              elsif action == "返した"
-                lending = Lending
-                            .not_returned
-                            .where(borrower_id: borrower_id, lender_name: lender_name, content: content)
-                            .order(:created_at)
-                            .first
+              elsif action == "返した" && lender_name && content
+                lending = Lending.not_returned.find_by!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
-                raise(
-                  ArgumentError,
-                  "Lending was not found.\n
-                   borrower_id: #{borrower_id}, lender_name: #{lender_name}, content: #{content}"
-                ) if lending.nil?
-
-                lending.has_returned = true
-                lending.save!
+                lending.return_content!
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
                 "#{lender_name}さんに#{content}を返しました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
 
               else
-                raise ArgumentError, "Unexpected action: #{action}"
+                raise ArgumentError
               end
 
             client.reply_message(reply_token, { type: 'text', text: response })
+          rescue ArgumentError, ActiveRecord::RecordNotFound => error
+            client.reply_message(reply_token, { type: 'text', text: "エラーが発生しました。入力値が間違っている可能性があります。" })
           rescue => error
             logger.error error
-
-            response = error.is_a?(ArgumentError) ?
-                         "エラーが発生しました。入力値が間違っている可能性があります。" :
-                         " 予期せぬエラーが発生しました。"
-            client.reply_message(reply_token, { type: 'text', text: response })
+            client.reply_message(reply_token, { type: 'text', text: " 予期せぬエラーが発生しました。" })
           end
         else
           client.reply_message(reply_token, { type: 'text', text: 'そのメッセージ形式はサポートされていません' })

@@ -19,7 +19,6 @@ entity Lending {
 entity Thanking {
     +id: int
     --
-    ~lending_id: int
     #name: string
     #url: string
 }
