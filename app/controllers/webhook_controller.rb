@@ -30,7 +30,7 @@ class WebhookController < ApplicationController
                 Lending.create!(borrower_id: borrower_id, lender_name: lender_name, content: content)
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
-                "#{lender_name}さんに#{content}を借りました！\n#{lender_name}さんには計#{lending_count}個の借りがあります。"
+                "#{lender_name}に#{content}を借りました！\n#{lender_name}には計#{lending_count}個の借りがあります。"
 
               elsif action == "一覧"
                 per_lender_content_counts = Lending.not_returned.where(borrower_id: borrower_id).count_per_lender_content
