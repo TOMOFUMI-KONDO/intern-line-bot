@@ -1,4 +1,7 @@
 class Lending < ApplicationRecord
+  has_many :lending_thankings
+  has_many :thankings, through: :lending_thankings
+
   validates :borrower_id, :lender_name, :content, presence: true
 
   scope :not_returned, -> { where(has_returned: false) }
