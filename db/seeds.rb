@@ -6,7 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-Thanking.create([
+Thanking.create!([
                   { name: "Starbucks Coffee Japan ドリンクチケット", url: "https://giftee.com/items/468" },
                   { name: "LAWSON MACHI caféドリンク(S)", url: "https://giftee.com/items/893" },
                   { name: "Starbucks Coffee Japan フードチケット(300円)", url: "https://giftee.com/items/1102" },
