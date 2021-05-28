@@ -43,7 +43,7 @@ class WebhookController < ApplicationController
 
                 lending_count = Lending.not_returned.where(borrower_id: borrower_id, lender_name: lender_name).count
                 thanking = Thanking.random_choice
-                LendingThanking.create!(lending_id: lending.id, thanking_id: thanking.id)
+                LendingThanking.create!(lending: lending, thanking: thanking)
 
                 render_to_string partial: 'on_returned_message', locals: {
                   lending: lending,
