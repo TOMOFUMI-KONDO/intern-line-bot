@@ -4,7 +4,7 @@ class Thanking < ApplicationRecord
 
   validates :name, :url, presence: true
 
-  scope :random_choice, -> {
-    find(Thanking.pluck(:id).sample)
-  }
+  def self.random_choice
+    Thanking.find(Thanking.pluck(:id).sample)
+  end
 end
