@@ -3,14 +3,35 @@
 hide circle
 skinparam inetype ortho
 
+' 借り
 entity Lending {
-    +borrower_id: string
-    +lender_name: string
-    +created_at: timestamp
+    +id: int
     --
+    #borrower_id: string
+    #lender_name: string
     #content: string
     #has_returned: boolean
+    #created_at: timestamp
+    #udpated_at: timestamp
 }
+
+' お礼
+entity Thanking {
+    +id: int
+    --
+    #name: string
+    #url: string
+}
+
+entity LendingThanking {
+    +id: int
+    --
+    ~lending_id: int
+    ~thanking_id: int
+}
+
+Lending ||--o{ LendingThanking
+Thanking ||--o{ LendingThanking
 
 entity Example {
     +primary_key: type
